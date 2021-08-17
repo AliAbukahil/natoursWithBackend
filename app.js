@@ -3,6 +3,12 @@ const express = require('express');
 
 const app = express();
 
+//  including middleware
+// middleware is basically just a function that can modify the incoming request data
+// it is called middleware because it stands between, so in the middle of the request and the response
+app.use(express.json());
+//////////////////////////////////////////
+
 // // Defining Route, all we do is app then the http method (get) we want to respond to
 // // get is http method
 // app.get('/', (req, res) => {
@@ -22,6 +28,7 @@ const tours = JSON.parse(
 );
 
 // the route handler
+// get method to get a new tour
 app.get('/api/v1/tours', (req, res) => {
   res.status(200).json({
     status: 'success',
@@ -31,6 +38,30 @@ app.get('/api/v1/tours', (req, res) => {
     // in ES6 we don't have to specify the KEY and the VALUE if they are both the same name like this for Example data: { tours: tours },
     data: { tours },
   });
+});
+
+// post method to create a new tour
+// the req is what hold all the data
+app.post('/api/v1/tours', (req, res) => {
+  // console.log(req.body);
+
+  const newId = tours[tours.length - 1].id + 1;
+  const newTour = Object.assign({ id: newId }, req.body);
+
+  tours.push(newTour);
+
+  fs.writeFile(
+    `${__dirname}/dev-data/data/tours-simple.json`,
+    JSON.stringify(tours),
+    (err) => {
+      res.status(201).json({
+        status: 'success',
+        data: {
+          tour: newTour,
+        },
+      });
+    }
+  );
 });
 
 const port = 3000;
