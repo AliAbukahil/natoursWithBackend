@@ -3,6 +3,10 @@ const express = require('express');
 const tourController = require('../controllers/tourController');
 const router = express.Router();
 
+// the param Middleware
+// in a param middleware function we actually get access to a fourth argument example : val
+router.param('id', tourController.checkID);
+
 router
   .route('/')
   .get(tourController.getAllTours)
