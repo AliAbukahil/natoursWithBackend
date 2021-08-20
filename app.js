@@ -1,23 +1,41 @@
 const fs = require('fs');
 const express = require('express');
-const { fail } = require('assert');
+// requiring morgan Middleware
+const morgan = require('morgan');
 
 const app = express();
+
+// 1) MIDDLEWARE
 
 //  including middleware
 // middleware is basically just a function that can modify the incoming request data
 // it is called middleware because it stands between, so in the middle of the request and the response
+app.use(morgan('dev'));
 app.use(express.json());
+
+// Middleware Function next
+app.use((req, res, next) => {
+  console.log('Hello from the middleware 👋');
+  next();
+});
+// Another Middleware Function next
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString().slice(0, 16).replace('T', ' ');
+  next();
+});
 
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
+// 2) Route Handlers
 const getAllTours = (req, res) => {
+  console.log(req.requestTime);
   res.status(200).json({
     status: 'success',
     // optional when sending multiple responses, to include a field called results to show how many results are there, only makes sense whenever we're sending an array
     results: tours.length,
+    requestedAt: req.requestTime,
     //this is the envelope for our data
     // in ES6 we don't have to specify the KEY and the VALUE if they are both the same name like this for Example data: { tours: tours },
     data: { tours },
@@ -112,6 +130,7 @@ const deleteTour = (req, res) => {
 // Delete http method
 //app.delete('/api/v1/tours/:id', deleteTour);
 
+// 3) Routes
 app.route('/api/v1/tours').get(getAllTours).post(createTour);
 
 app
@@ -120,7 +139,7 @@ app
   .patch(updateTour)
   .delete(deleteTour);
 
-// the server
+// 4) Start SERVER
 const port = 3000;
 app.listen(port, () => {
   console.log(`App running on port ${port}...`);
