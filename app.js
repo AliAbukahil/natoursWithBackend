@@ -15,6 +15,9 @@ app.use(morgan('dev'));
 // Middleware
 app.use(express.json());
 
+// a build in Express Middleware if we wanna serve static files like images and html pages
+app.use(express.static(`${__dirname}/public`));
+
 // Middleware Function next
 app.use((req, res, next) => {
   console.log('Hello from the middleware 👋');

@@ -17,6 +17,21 @@ exports.checkID = (req, res, next, val) => {
   next();
 };
 
+// challenge
+// Create a checkBody middleware
+// If not, send Back 400 (bad request)
+// Add it to the post handler stack
+exports.checkBody = (req, res, next) => {
+  // if there is !no request.body.name or|| !no request.body.price then return res.status(400) etc...
+  if (!req.body.name || !req.body.price) {
+    return res.status(400).json({
+      status: 'fail',
+      message: 'Missing name or Price',
+    });
+  }
+  next();
+};
+
 // ) Route Handlers
 exports.getAllTours = (req, res) => {
   console.log(req.requestTime);
