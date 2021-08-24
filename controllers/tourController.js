@@ -22,6 +22,7 @@ const Tour = require('./../models/tourModel');
 // };
 
 // ) Route Handlers
+// Get Http method
 exports.getAllTours = async (req, res) => {
   try {
     const tours = await Tour.find();
@@ -41,11 +42,11 @@ exports.getAllTours = async (req, res) => {
     });
   }
 };
-
+// Get Http method
 exports.getTour = async (req, res) => {
   try {
     const tour = await Tour.findById(req.params.id);
-    //a shorthand Tour.fondOne({ _id: req.params.id})
+    //a shorthand findById for having to write this ==> Tour.fondOne({ _id: req.params.id})
     res.status(200).json({
       status: 'success',
       data: {
@@ -59,9 +60,12 @@ exports.getTour = async (req, res) => {
     });
   }
 };
-
+// Post Http method
 exports.createTour = async (req, res) => {
   try {
+    // const newTour = new Tour({})
+    // newTour.save()
+
     const newTour = await Tour.create(req.body);
 
     res.status(201).json({
@@ -77,16 +81,29 @@ exports.createTour = async (req, res) => {
     });
   }
 };
+//patch Http method
+exports.updateTour = async (req, res) => {
+  try {
+    // querying for the document that we want to update
+    const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
 
-exports.updateTour = (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour: '<Updated tour here ...',
-    },
-  });
+    res.status(200).json({
+      status: 'success',
+      data: {
+        tour,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err,
+    });
+  }
 };
-
+// delete Http method
 exports.deleteTour = (req, res) => {
   // status (204) means no content
   res.status(204).json({
