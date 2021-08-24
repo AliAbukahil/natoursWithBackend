@@ -22,31 +22,42 @@ const Tour = require('./../models/tourModel');
 // };
 
 // ) Route Handlers
-exports.getAllTours = (req, res) => {
-  console.log(req.requestTime);
-  res.status(200).json({
-    status: 'success',
-    // optional when sending multiple responses, to include a field called results to show how many results are there, only makes sense whenever we're sending an array
-    // results: tours.length,
-    // requestedAt: req.requestTime,
-    //this is the envelope for our data
-    // in ES6 we don't have to specify the KEY and the VALUE if they are both the same name like this for Example data: { tours: tours },
-    // data: { tours },
-  });
+exports.getAllTours = async (req, res) => {
+  try {
+    const tours = await Tour.find();
+    // this find() method will return an array of all the Documents and will also very nicely convert them into javaScript objects
+
+    res.status(200).json({
+      status: 'success',
+      results: tours.length,
+      data: {
+        tours,
+      },
+    });
+  } catch (error) {
+    res.status(404).json({
+      status: 'fail',
+      message: error,
+    });
+  }
 };
 
-exports.getTour = (req, res) => {
-  console.log(req.params);
-  const id = req.params.id * 1;
-
-  // const tour = tours.find((element) => element.id === id);
-
-  // res.status(200).json({
-  //   status: 'success',
-  //   data: {
-  //     tour,
-  //   },
-  // });
+exports.getTour = async (req, res) => {
+  try {
+    const tour = await Tour.findById(req.params.id);
+    //a shorthand Tour.fondOne({ _id: req.params.id})
+    res.status(200).json({
+      status: 'success',
+      data: {
+        tour,
+      },
+    });
+  } catch (ERROR) {
+    res.status(404).json({
+      status: 'fail',
+      message: ERROR,
+    });
+  }
 };
 
 exports.createTour = async (req, res) => {
