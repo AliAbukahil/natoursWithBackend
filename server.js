@@ -2,7 +2,8 @@
 const mongoose = require('mongoose');
 // requiring dotenv
 const dotenv = require('dotenv');
-
+// requiring the app file
+const app = require('./app');
 //Environment Variables
 dotenv.config({ path: './config.env' });
 
@@ -19,9 +20,6 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => console.log('DB connection successful'));
-
-// requiring the app file
-const app = require('./app');
 
 //  Start SERVER
 const port = process.env.PORT || 3000;
