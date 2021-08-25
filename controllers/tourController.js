@@ -1,5 +1,5 @@
 // requiring the tourModals from the modals folder
-const { create } = require('./../models/tourModel');
+//const { create } = require('./../models/tourModel');
 const Tour = require('./../models/tourModel');
 // this is where we read the tours from the json file
 // note => this is only for test purposes
@@ -104,10 +104,18 @@ exports.updateTour = async (req, res) => {
   }
 };
 // delete Http method
-exports.deleteTour = (req, res) => {
-  // status (204) means no content
-  res.status(204).json({
-    status: 'success',
-    data: null,
-  });
+exports.deleteTour = async (req, res) => {
+  try {
+    await Tour.findByIdAndDelete(req.params.id);
+    // status (204) means no content
+    res.status(204).json({
+      status: 'success',
+      data: null,
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err,
+    });
+  }
 };
