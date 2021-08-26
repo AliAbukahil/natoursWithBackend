@@ -25,21 +25,27 @@ const Tour = require('./../models/tourModel');
 // Get Http method
 exports.getAllTours = async (req, res) => {
   try {
-    // cBulid Query
+    // Bulid Query
+    // 1) Filtering
     const queryObj = { ...req.query };
     const excludedFields = ['page', 'sort', 'limit', 'fields', 'test'];
     excludedFields.forEach((el) => delete queryObj[el]);
 
-    const query = Tour.find(queryObj);
+    // 2) Advanced filtering
+    // converting the object to a string
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    console.log(JSON.parse(queryStr));
+
+    const query = Tour.find(JSON.parse(queryStr));
+    // Execute Query
+    const tours = await query;
 
     // const query = Tour.find()
     //   .where('duration')
     //   .equals(5)
     //   .where('difficulty')
     //   .equals('easy');
-
-    // Execute Query
-    const tours = await query;
     ///
     // send response
     res.status(200).json({
