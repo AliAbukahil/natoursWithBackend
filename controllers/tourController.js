@@ -40,7 +40,7 @@ exports.getAllTours = async (req, res) => {
 
     // Execute Query
     const tours = await query;
-
+    ///
     // send response
     res.status(200).json({
       status: 'success',
