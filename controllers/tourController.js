@@ -25,9 +25,23 @@ const Tour = require('./../models/tourModel');
 // Get Http method
 exports.getAllTours = async (req, res) => {
   try {
-    const tours = await Tour.find();
-    // this find() method will return an array of all the Documents and will also very nicely convert them into javaScript objects
+    // cBulid Query
+    const queryObj = { ...req.query };
+    const excludedFields = ['page', 'sort', 'limit', 'fields', 'test'];
+    excludedFields.forEach((el) => delete queryObj[el]);
 
+    const query = Tour.find(queryObj);
+
+    // const query = Tour.find()
+    //   .where('duration')
+    //   .equals(5)
+    //   .where('difficulty')
+    //   .equals('easy');
+
+    // Execute Query
+    const tours = await query;
+
+    // send response
     res.status(200).json({
       status: 'success',
       results: tours.length,
