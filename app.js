@@ -33,7 +33,9 @@ app.use((req, res, next) => {
 
 // 3) Routes
 
+// tours
 app.use('/api/v1/tours', tourRouter);
+// users
 app.use('/api/v1/users', userRouter);
 
 module.exports = app;
