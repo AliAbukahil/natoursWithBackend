@@ -50,6 +50,7 @@ const tourSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now(),
+    select: false,
   },
   startDates: [Date],
   // these startDate are basically different dates at which a tour starts. For example, we can have a tour starting in December this year, and in February, the next year, and then another one in the summer and so different dates for the same tour
