@@ -8,6 +8,10 @@ const router = express.Router();
 // router.param('id', tourController.checkID);
 
 router
+  .route('/top-5-cheap') // aliasTopTours is a middleware function which will manipulate the query object that's coming in
+  .get(tourController.aliasTopTours, tourController.getAllTours);
+
+router
   .route('/')
   .get(tourController.getAllTours)
   .post(tourController.createTour);
