@@ -1,5 +1,7 @@
 // requiring mongoose package
 const mongoose = require('mongoose');
+// requiring slugify package
+const slugify = require('slugify');
 // Building up a schema
 const tourSchema = new mongoose.Schema(
   {
@@ -9,6 +11,7 @@ const tourSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
+    slug: String,
     duration: {
       type: Number,
       required: [true, 'A tour must have a duration'],
@@ -68,6 +71,22 @@ tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
   // ?? /7 => this is how we calculate the duration in weeks
 });
+
+// DOCUMENT Mongoose MIDDLEWARE: runs before .save() and .create() ONLY on those two
+tourSchema.pre('save', function (next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+// tourSchema.pre('save', function (next) {
+//   console.log('will save document...');
+//   next();
+// });
+
+// tourSchema.post('save', function (doc, next) {
+//   console.log(doc);
+//   next();
+// });
 
 // creating a model out the Schema above
 const Tour = mongoose.model('Tour', tourSchema);
