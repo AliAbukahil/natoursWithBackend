@@ -58,6 +58,10 @@ const tourSchema = new mongoose.Schema(
     },
     startDates: [Date],
     // these startDate are basically different dates at which a tour starts. For example, we can have a tour starting in December this year, and in February, the next year, and then another one in the summer and so different dates for the same tour
+    secretTour: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     toJSON: { virtuals: true },
@@ -87,6 +91,21 @@ tourSchema.pre('save', function (next) {
 //   console.log(doc);
 //   next();
 // });
+
+// QUERY MIDDLEWARE
+//tourSchema.pre('find', function (next) {
+tourSchema.pre(/^find/, function (next) {
+  this.find({ secretTour: { $ne: true } });
+
+  this.start = Date.now();
+  next();
+});
+
+tourSchema.post(/^find/, function (docs, next) {
+  console.log(`Query took ${Date.now() - this.start} millieseconds!`);
+  console.log(docs);
+  next();
+});
 
 // creating a model out the Schema above
 const Tour = mongoose.model('Tour', tourSchema);
