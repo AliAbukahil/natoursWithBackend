@@ -2,6 +2,8 @@
 const mongoose = require('mongoose');
 // requiring slugify package
 const slugify = require('slugify');
+// requiring Validator
+// const validator = require('validator');
 // Building up a schema
 const tourSchema = new mongoose.Schema(
   {
@@ -11,7 +13,8 @@ const tourSchema = new mongoose.Schema(
       unique: true,
       trim: true,
       maxlength: [40, 'A tour name must have less or equal then 40 characters'], // validator only available on strings
-      minlength: [10, 'A tour name must have more or equal then 10 characters'], // validator only available on strings+
+      minlength: [10, 'A tour name must have more or equal then 10 characters'], // validator only available on strings
+      // validate: [validator.isAlpha, 'A Tour name must only contain characters'],
     },
     slug: String,
     duration: {
@@ -45,7 +48,18 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       required: [true, 'A tour must have a price'],
     },
-    priceDiscount: Number,
+    priceDiscount: {
+      type: Number,
+      // a custom Validator
+      validate: {
+        validator: function (val) {
+          // not an arrow function but a real function, because we have to access the (this) variable which cannot be accessed
+          // Not gonna work on update // this only points to current doc on NEW document creation
+          return val < this.price;
+        },
+        message: 'Discount price ({VALUE}) should be below the reqular price',
+      },
+    },
     summary: {
       type: String,
       trim: true,
@@ -85,7 +99,7 @@ tourSchema.virtual('durationWeeks').get(function () {
   // ?? /7 => this is how we calculate the duration in weeks
 });
 
-// DOCUMENT Mongoose MIDDLEWARE: runs before .save() and .create() ONLY on those two
+// DOCUMENT Mongoose MIDDLEWARE: runs before .save() and .create() ONLY on those two Not for update()
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
