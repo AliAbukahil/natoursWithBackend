@@ -1,6 +1,10 @@
 const express = require('express');
 // requiring morgan Middleware
 const morgan = require('morgan');
+// requiring AppError
+const AppError = require('./utils/appError');
+// requiring errorController from controllers folder
+const globalErrorHandler = require('./controllers/errorController');
 // requiring tourRoutes and userRoutes
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
@@ -45,27 +49,10 @@ app.use('/api/v1/users', userRouter);
 // example 127.0.0.1:3000/api/tours/monkey :`)
 // in Express we can use app.all for all the HTTP method
 app.all('*', (req, res, next) => {
-  // res.status(404).json({
-  //   status: 'fail',
-  //   message: `Can't find ${req.originalUrl} on this server`,
-  // });
-
-  const err = new Error(`Can't find ${req.originalUrl} on this server`);
-  err.status = 'fail';
-  err.statusCode = 404;
-
-  next(err);
+  next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
 });
 
 // an error handling middleware function
-app.use((err, req, res, next) => {
-  err.statusCode = err.statusCode || 500;
-  err.status = err.status || 'error';
-
-  res.status(err.statusCode).json({
-    status: err.status,
-    message: err.message,
-  });
-});
+app.use(globalErrorHandler);
 
 module.exports = app;
