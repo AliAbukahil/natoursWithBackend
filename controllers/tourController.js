@@ -12,6 +12,9 @@ const APIFeatures = require('./../utils/apiFeatures');
 // requirung the catching errors catchAsync function from utilities folder
 const catchAsync = require('./../utils/catchAsync');
 
+// requiring the AppError class from appError file in utils folder
+const AppError = require('./../utils/appError');
+
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
   req.query.sort = '-ratingsAvarage,price';
@@ -42,6 +45,11 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
 exports.getTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findById(req.params.id);
   //a shorthand findById for having to write this ==> Tour.fondOne({ _id: req.params.id})
+
+  if (!tour) {
+    return next(new AppError('No tour with that ID', 404));
+  }
+
   res.status(200).json({
     status: 'success',
     data: {
@@ -70,6 +78,10 @@ exports.updateTour = catchAsync(async (req, res, next) => {
     runValidators: true,
   });
 
+  if (!tour) {
+    return next(new AppError('No tour with that ID', 404));
+  }
+
   res.status(200).json({
     status: 'success',
     data: {
@@ -79,7 +91,12 @@ exports.updateTour = catchAsync(async (req, res, next) => {
 });
 // delete Http method
 exports.deleteTour = catchAsync(async (req, res, next) => {
-  await Tour.findByIdAndDelete(req.params.id);
+  const tour = await Tour.findByIdAndDelete(req.params.id);
+
+  if (!tour) {
+    return next(new AppError('No tour with that ID', 404));
+  }
+
   // status (204) means no content
   res.status(204).json({
     status: 'success',
