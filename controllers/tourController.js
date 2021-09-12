@@ -1,4 +1,4 @@
-// requiring the tourModals from the modals folder
+// requiring the tourModal from the modals folder
 //const { create } = require('./../models/tourModel');
 const Tour = require('./../models/tourModel');
 // this is where we read the tours from the json file
