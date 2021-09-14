@@ -28,6 +28,7 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Please provide a password'],
     // a password rule of 8 charachters as min
     minlength: 8,
+    select: false,
   },
   passwordConfirm: {
     type: String,
@@ -46,12 +47,22 @@ const userSchema = new mongoose.Schema({
 userSchema.pre('save', async function (next) {
   // only run this function if password was actually modified
   if (!this.isModified('password')) return next();
+
   // Hash the password with cost of 12
   this.password = await bcrypt.hash(this.password, 12);
+
   // next step delete the passwordConfirm  field
   this.passwordConfirm = undefined;
   next();
 });
+
+// Compare function for the Password
+userSchema.methods.correctPassword = async function (
+  candidatePassword,
+  userPassword
+) {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
 
 // creating a model out the Schema above
 const User = mongoose.model('User', userSchema);

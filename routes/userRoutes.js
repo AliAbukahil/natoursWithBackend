@@ -8,6 +8,7 @@ const router = express.Router();
 
 // a route for signup
 router.post('/signup', authController.signup);
+router.post('/login', authController.login);
 
 // routes in REST format
 router
