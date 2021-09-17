@@ -1,3 +1,5 @@
+// requiring crypto / a built in node module
+const crypto = require('crypto');
 // requiring mongoose package
 const mongoose = require('mongoose');
 
@@ -47,6 +49,8 @@ const userSchema = new mongoose.Schema({
     },
   },
   passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date, // user will have 10 minutes to reset password
 });
 
 // encryption of the password or to (hash) the password
@@ -82,6 +86,20 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
 
   // False means NOT changed
   return false;
+};
+
+userSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  this.passwordResetToken = crypto;
+
+  crypto.createHash('sha256').update(resetToken).digest('hex');
+
+  console.log({ resetToken }, this.passwordResetToken);
+
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+  return resetToken;
 };
 
 // creating a model out the Schema above
