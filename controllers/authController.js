@@ -106,3 +106,17 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = currentUser;
   next();
 });
+
+// another middleware function to restrict routes, for Example, for deleting tours administrator privileges
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    // roles is an array ["admin", "lead-guide"]. role="user"
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError('You do not have permission to perform this action', 403)
+      ); // 403 means forbidden
+    }
+
+    next();
+  };
+};
