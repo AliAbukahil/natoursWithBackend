@@ -10,7 +10,7 @@ const router = express.Router();
 router.post('/signup', authController.signup);
 router.post('/login', authController.login);
 router.post('/forgotPassword', authController.forgotPassword); // only receive the email address
-router.post('/resetPassword', authController.resetPassword); // will receive the token as well as the new password
+router.patch('/resetPassword/:token', authController.resetPassword); // will receive the token as well as the new password
 
 // routes in REST format
 router
