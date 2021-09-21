@@ -58,6 +58,16 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   });
 });
 
+// to to deactivate the user
+exports.deleteMe = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, { active: false });
+
+  res.status(200).json({
+    status: 'success',
+    data: null,
+  });
+});
+
 exports.getUser = (req, res) => {
   res.status(500).json({
     status: 'error',

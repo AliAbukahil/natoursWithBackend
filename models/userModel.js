@@ -51,6 +51,12 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date, // user will have 10 minutes to reset password
+  active: {
+    // to deactivate the user
+    type: Boolean,
+    default: true,
+    select: false,
+  },
 });
 
 // encryption of the password or to (hash) the password
@@ -70,6 +76,13 @@ userSchema.pre('save', function (next) {
   if (!this.isModified('password') || this.isNew) return next();
 
   this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
+// to hide the unactive users
+userSchema.pre(/^find/, function (next) {
+  // this points to current query
+  this.find({ active: { $ne: false } }); // $ne => not equal
   next();
 });
 
