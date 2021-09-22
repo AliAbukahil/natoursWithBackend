@@ -1,6 +1,8 @@
 const express = require('express');
 // requiring morgan Middleware
 const morgan = require('morgan');
+// requiring express rate limit package
+const rateLimit = require('express-rate-limit');
 // requiring AppError
 const AppError = require('./utils/appError');
 // requiring errorController from controllers folder
@@ -11,13 +13,21 @@ const userRouter = require('./routes/userRoutes');
 
 const app = express();
 
-// 1) MIDDLEWARE
+// 1) GlOBAL MIDDLEWARES
 //  including middleware
 // middleware is basically just a function that can modify the incoming request data
 // it is called middleware because it stands between, so in the middle of the request and the response
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
+
+const limiter = rateLimit({
+  max: 100,
+  windowMs: 60 * 60 * 1000, // this will allow 100 requests from the same IP in one hour
+  message: 'Too many requests from this IP, please try again in an hour',
+});
+app.use('/api', limiter);
+
 // Middleware
 app.use(express.json());
 
