@@ -9,6 +9,8 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 // requiring the xss Cleaner
 const xss = require('xss-clean');
+// requiring the hpp HTTP Parameter pollution
+const hpp = require('hpp');
 // requiring AppError
 const AppError = require('./utils/appError');
 // requiring errorController from controllers folder
@@ -47,6 +49,20 @@ app.use(mongoSanitize()); // it removes the $ sign "email": {"$gt": ""}
 
 // Data sanitization against XSS
 app.use(xss());
+
+// prevent Parameter pollution
+app.use(
+  hpp({
+    whitelist: [
+      'duration',
+      'ratingsQuantity',
+      'ratingsAverage',
+      'maxGroupSize',
+      'difficulty',
+      'price',
+    ],
+  })
+);
 
 //  Serving static files like images and html pages
 app.use(express.static(`${__dirname}/public`));
