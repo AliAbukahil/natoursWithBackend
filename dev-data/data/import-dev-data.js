@@ -26,9 +26,7 @@ mongoose
   .then(() => console.log('DB connection successful'));
 
 // after all this above Now we start READING the JSON FILE
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/tours-simple.json`, 'utf-8')
-);
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`, 'utf-8'));
 
 // now we write the actual function that is going to import the data into the MongoDB data base
 // IMPORT DATA INTO DB
