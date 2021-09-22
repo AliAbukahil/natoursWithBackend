@@ -5,6 +5,10 @@ const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 // requiring helmet package
 const helmet = require('helmet');
+// requiring the sanitizer
+const mongoSanitize = require('express-mongo-sanitize');
+// requiring the xss Cleaner
+const xss = require('xss-clean');
 // requiring AppError
 const AppError = require('./utils/appError');
 // requiring errorController from controllers folder
@@ -37,6 +41,12 @@ app.use('/api', limiter);
 
 // Body parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));
+
+// Data sanitization against NoSQL query injection
+app.use(mongoSanitize()); // it removes the $ sign "email": {"$gt": ""}
+
+// Data sanitization against XSS
+app.use(xss());
 
 //  Serving static files like images and html pages
 app.use(express.static(`${__dirname}/public`));
