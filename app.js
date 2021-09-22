@@ -3,6 +3,8 @@ const express = require('express');
 const morgan = require('morgan');
 // requiring express rate limit package
 const rateLimit = require('express-rate-limit');
+// requiring helmet package
+const helmet = require('helmet');
 // requiring AppError
 const AppError = require('./utils/appError');
 // requiring errorController from controllers folder
@@ -14,13 +16,18 @@ const userRouter = require('./routes/userRoutes');
 const app = express();
 
 // 1) GlOBAL MIDDLEWARES
-//  including middleware
 // middleware is basically just a function that can modify the incoming request data
 // it is called middleware because it stands between, so in the middle of the request and the response
+
+// Set Security HTTP headers
+app.use(helmet());
+
+// Development Logging
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
+// Limit requests from same API
 const limiter = rateLimit({
   max: 100,
   windowMs: 60 * 60 * 1000, // this will allow 100 requests from the same IP in one hour
@@ -28,10 +35,10 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
-// Middleware
-app.use(express.json());
+// Body parser, reading data from body into req.body
+app.use(express.json({ limit: '10kb' }));
 
-// a build in Express Middleware if we wanna serve static files like images and html pages
+//  Serving static files like images and html pages
 app.use(express.static(`${__dirname}/public`));
 
 // Middleware Function next
@@ -42,7 +49,7 @@ app.use(express.static(`${__dirname}/public`));
 //   next();
 // });
 
-// Another Middleware Function next
+// Test Middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString().slice(0, 16).replace('T', ' ');
   // console.log(req.headers);
