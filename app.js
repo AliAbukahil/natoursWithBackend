@@ -18,6 +18,7 @@ const globalErrorHandler = require('./controllers/errorController');
 // requiring tourRoutes and userRoutes
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
+const reviewRouter = require('./routes/reviewRoutes');
 
 const app = express();
 
@@ -88,6 +89,8 @@ app.use((req, res, next) => {
 app.use('/api/v1/tours', tourRouter);
 // users
 app.use('/api/v1/users', userRouter);
+// reviews
+app.use('/api/v1/reviews', reviewRouter);
 
 // this route should be the last part after all our other routes
 // example 127.0.0.1:3000/api/tours/monkey :`)
