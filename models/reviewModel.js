@@ -32,6 +32,20 @@ const reviewSchmea = new mongoose.Schema(
   }
 );
 
+// /^find/ => reqular Expression to basically match strings, which start with find,
+// this is going to work for find,for findOne and all other find one methods that
+// are availabe in Mongoose
+reviewSchmea.pre(/^find/, function (next) {
+  this.populate({
+    path: 'tour',
+    select: 'name',
+  }).populate({
+    path: 'user',
+    select: 'name photo',
+  });
+  next();
+});
+
 const Review = mongoose.model('Review', reviewSchmea);
 
 module.exports = Review;
