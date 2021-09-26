@@ -124,6 +124,13 @@ tourSchema.virtual('durationWeeks').get(function () {
   // ?? /7 => this is how we calculate the duration in weeks
 });
 
+// Virtual Populate
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
+});
+
 // DOCUMENT Mongoose MIDDLEWARE: runs before .save() and .create() ONLY on those two Not for update()
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });

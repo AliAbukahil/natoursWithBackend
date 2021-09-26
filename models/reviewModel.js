@@ -36,10 +36,15 @@ const reviewSchmea = new mongoose.Schema(
 // this is going to work for find,for findOne and all other find one methods that
 // are availabe in Mongoose
 reviewSchmea.pre(/^find/, function (next) {
+  // this.populate({
+  //   path: 'tour',
+  //   select: 'name',
+  // }).populate({
+  //   path: 'user',
+  //   select: 'name photo',
+  // });
+
   this.populate({
-    path: 'tour',
-    select: 'name',
-  }).populate({
     path: 'user',
     select: 'name photo',
   });
