@@ -1,9 +1,12 @@
 const express = require('express');
 // reqiuring the tour controller
 const tourController = require('../controllers/tourController');
-const router = express.Router();
 // reqiuring the authController
 const authController = require('../controllers/authController');
+// requiring the review controller
+const reviewController = require('../controllers/reviewController');
+
+const router = express.Router();
 
 // the param Middleware
 // in a param middleware function we actually get access to a fourth argument example : val
@@ -31,5 +34,12 @@ router
     tourController.deleteTour
   );
 
+router
+  .route('/:tourId/reviews')
+  .post(
+    authController.protect,
+    authController.restrictTo('user'),
+    reviewController.createReview
+  );
 // When we have one thing to export we use module.exports
 module.exports = router;
