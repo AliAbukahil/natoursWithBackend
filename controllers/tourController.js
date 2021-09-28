@@ -1,19 +1,17 @@
 // requiring the tourModal from the modals folder
 //const { create } = require('./../models/tourModel');
-const Tour = require('./../models/tourModel');
+const Tour = require('../models/tourModel');
 // this is where we read the tours from the json file
 // note => this is only for test purposes
 // const tours = JSON.parse(
 //   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
 // );
 
-const APIFeatures = require('./../utils/apiFeatures');
-
 // requirung the catching errors catchAsync function from utilities folder
-const catchAsync = require('./../utils/catchAsync');
+const catchAsync = require('../utils/catchAsync');
 
 // requiring the AppError class from appError file in utils folder
-const AppError = require('./../utils/appError');
+// const AppError = require('./../utils/appError');
 
 // requiring the handler Factory delete function
 const factory = require('./handlerFactory');
@@ -25,62 +23,11 @@ exports.aliasTopTours = (req, res, next) => {
   next();
 };
 
-// ) Route Handlers
-// Get Http method
-exports.getAllTours = catchAsync(async (req, res, next) => {
-  const features = new APIFeatures(Tour.find(), req.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .paginate(0);
-  const tours = await features.query;
-
-  // send response
-  res.status(200).json({
-    status: 'success',
-    results: tours.length,
-    data: {
-      tours,
-    },
-  });
-});
-// Get Http method
-exports.getTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findById(req.params.id).populate('reviews');
-  //a shorthand findById for having to write this ==> Tour.fondOne({ _id: req.params.id})
-
-  if (!tour) {
-    return next(new AppError('No tour with that ID', 404));
-  }
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour,
-    },
-  });
-});
-
-// Post Http method
+exports.getAllTours = factory.getAll(Tour);
+exports.getTour = factory.getOne(Tour, { path: 'reviews' });
 exports.createTour = factory.createOne(Tour);
-//patch Http method
 exports.updateTour = factory.updateOne(Tour);
-// delete Http method
 exports.deleteTour = factory.deleteOne(Tour);
-
-// exports.deleteTour = catchAsync(async (req, res, next) => {
-//   const tour = await Tour.findByIdAndDelete(req.params.id);
-
-//   if (!tour) {
-//     return next(new AppError('No tour with that ID', 404));
-//   }
-
-//   // status (204) means no content
-//   res.status(204).json({
-//     status: 'success',
-//     data: null,
-//   });
-// });
 
 // aggregation pipeline Function/ is a MonogoDB feature
 exports.getToursStats = catchAsync(async (req, res, next) => {
