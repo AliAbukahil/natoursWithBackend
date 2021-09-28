@@ -7,6 +7,9 @@ const catchAsync = require('./../utils/catchAsync');
 
 const AppError = require('./../utils/appError');
 
+// requiring the handler Factory delete function
+const factory = require('./handlerFactory');
+
 const filterObj = (obj, ...allowedFields) => {
   // looping with Object, easy ways to loop in JavaScript, Object.keys(obj) => returns an Array containing all the key name
   const newObj = {};
@@ -86,9 +89,4 @@ exports.updateUser = (req, res) => {
     message: 'This route is not yet defined',
   });
 };
-exports.deleteUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet defined',
-  });
-};
+exports.deleteUser = factory.deleteOne(User);

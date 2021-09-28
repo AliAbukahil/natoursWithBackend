@@ -15,6 +15,9 @@ const catchAsync = require('./../utils/catchAsync');
 // requiring the AppError class from appError file in utils folder
 const AppError = require('./../utils/appError');
 
+// requiring the handler Factory delete function
+const factory = require('./handlerFactory');
+
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
   req.query.sort = '-ratingsAvarage,price';
@@ -89,20 +92,22 @@ exports.updateTour = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+exports.deleteTour = factory.deleteOne(Tour);
 // delete Http method
-exports.deleteTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findByIdAndDelete(req.params.id);
+// exports.deleteTour = catchAsync(async (req, res, next) => {
+//   const tour = await Tour.findByIdAndDelete(req.params.id);
 
-  if (!tour) {
-    return next(new AppError('No tour with that ID', 404));
-  }
+//   if (!tour) {
+//     return next(new AppError('No tour with that ID', 404));
+//   }
 
-  // status (204) means no content
-  res.status(204).json({
-    status: 'success',
-    data: null,
-  });
-});
+//   // status (204) means no content
+//   res.status(204).json({
+//     status: 'success',
+//     data: null,
+//   });
+// });
 
 // aggregation pipeline Function/ is a MonogoDB feature
 exports.getToursStats = catchAsync(async (req, res, next) => {
