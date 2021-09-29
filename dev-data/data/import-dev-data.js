@@ -1,21 +1,17 @@
-// creating a script to load the data from JSON file to into the Mongo Data base. and this script is completely independent of the rest of our express application and so we run this completely separately from the comment line just to import everything one.
-// requiring fs file system module
 const fs = require('fs');
-// requiring mongoose package
 const mongoose = require('mongoose');
-// requiring dotenv
 const dotenv = require('dotenv');
-// reqquiring the Tour model
 const Tour = require('./../../models/tourModel');
+const Review = require('./../../models/reviewModel');
+const User = require('./../../models/userModel');
 
-//Environment Variables
 dotenv.config({ path: './config.env' });
 
 const DB = process.env.DATABASE.replace(
   '<PASSWORD>',
   process.env.DATABASE_PASSWORD
 );
-// calling the connect method on mongoose
+
 mongoose
   .connect(DB, {
     useNewUrlParser: true,
@@ -23,29 +19,34 @@ mongoose
     useFindAndModify: false,
     useUnifiedTopology: true,
   })
-  .then(() => console.log('DB connection successful'));
+  .then(() => console.log('DB connection successful!'));
 
-// after all this above Now we start READING the JSON FILE
+// READ JSON FILE
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`, 'utf-8'));
+const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`, 'utf-8'));
+const reviews = JSON.parse(
+  fs.readFileSync(`${__dirname}/reviews.json`, 'utf-8')
+);
 
-// now we write the actual function that is going to import the data into the MongoDB data base
 // IMPORT DATA INTO DB
 const importData = async () => {
   try {
-    // So the create method here can also accept an array of objects not only objects and in that case, it will then simply create a new document for each of the objects in the array
     await Tour.create(tours);
-    console.log('Data successfully Imported!');
+    await User.create(users, { validateBeforeSave: false });
+    await Review.create(reviews);
+    console.log('Data successfully loaded!');
   } catch (err) {
     console.log(err);
   }
   process.exit();
 };
 
-// A Function to DELETE ALL DATA FROM DB
+// DELETE ALL DATA FROM DB
 const deleteData = async () => {
   try {
-    // when using deleteMany Method and pass nothing in the parameters and that would then delete all of the documents in a certain collection
     await Tour.deleteMany();
+    await User.deleteMany();
+    await Review.deleteMany();
     console.log('Data successfully deleted!');
   } catch (err) {
     console.log(err);
@@ -58,5 +59,3 @@ if (process.argv[2] === '--import') {
 } else if (process.argv[2] === '--delete') {
   deleteData();
 }
-
-// console.log(process.argv);

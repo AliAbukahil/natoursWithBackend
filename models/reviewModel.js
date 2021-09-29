@@ -1,6 +1,8 @@
+// review / rating / createdAt / ref to tour / ref to user
 const mongoose = require('mongoose');
+const Tour = require('./tourModel');
 
-const reviewSchmea = new mongoose.Schema(
+const reviewSchema = new mongoose.Schema(
   {
     review: {
       type: String,
@@ -23,7 +25,7 @@ const reviewSchmea = new mongoose.Schema(
     user: {
       type: mongoose.Schema.ObjectId,
       ref: 'User',
-      required: [true, 'Review must belong to a user.'],
+      required: [true, 'Review must belong to a user'],
     },
   },
   {
@@ -32,16 +34,15 @@ const reviewSchmea = new mongoose.Schema(
   }
 );
 
-// /^find/ => reqular Expression to basically match strings, which start with find,
-// this is going to work for find,for findOne and all other find one methods that
-// are availabe in Mongoose
-reviewSchmea.pre(/^find/, function (next) {
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
+
+reviewSchema.pre(/^find/, function (next) {
   // this.populate({
   //   path: 'tour',
-  //   select: 'name',
+  //   select: 'name'
   // }).populate({
   //   path: 'user',
-  //   select: 'name photo',
+  //   select: 'name photo'
   // });
 
   this.populate({
@@ -51,6 +52,52 @@ reviewSchmea.pre(/^find/, function (next) {
   next();
 });
 
-const Review = mongoose.model('Review', reviewSchmea);
+reviewSchema.statics.calcAverageRatings = async function (tourId) {
+  const stats = await this.aggregate([
+    {
+      $match: { tour: tourId },
+    },
+    {
+      $group: {
+        _id: '$tour',
+        nRating: { $sum: 1 },
+        avgRating: { $avg: '$rating' },
+      },
+    },
+  ]);
+  // console.log(stats);
+
+  if (stats.length > 0) {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsQuantity: stats[0].nRating,
+      ratingsAverage: stats[0].avgRating,
+    });
+  } else {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsQuantity: 0,
+      ratingsAverage: 4.5,
+    });
+  }
+};
+
+reviewSchema.post('save', function () {
+  // this points to current review
+  this.constructor.calcAverageRatings(this.tour);
+});
+
+// findByIdAndUpdate
+// findByIdAndDelete
+reviewSchema.pre(/^findOneAnd/, async function (next) {
+  this.r = await this.findOne();
+  // console.log(this.r);
+  next();
+});
+
+reviewSchema.post(/^findOneAnd/, async function () {
+  // await this.findOne(); does NOT work here, query has already executed
+  await this.r.constructor.calcAverageRatings(this.r.tour);
+});
+
+const Review = mongoose.model('Review', reviewSchema);
 
 module.exports = Review;
