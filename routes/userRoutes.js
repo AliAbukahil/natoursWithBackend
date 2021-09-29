@@ -1,26 +1,27 @@
 const express = require('express');
 // requiring the user controller
-const userController = require('../controllers/userController');
+const userController = require('./../controllers/userController');
 // requiring the auth controller
-const authController = require('../controllers/authController');
+const authController = require('./../controllers/authController');
 
 const router = express.Router();
 
 // a route for signup
 router.post('/signup', authController.signup);
 router.post('/login', authController.login);
-
 router.post('/forgotPassword', authController.forgotPassword); // only receive the email address
 router.patch('/resetPassword/:token', authController.resetPassword); // will receive the token as well as the new password
 
-router.patch(
-  '/updateMyPassword',
-  authController.protect,
-  authController.updatePassword
-);
+// this here is a nice little trick in order to protect all of the routes at the same time
+// typically by using a middleware that comes before all these other routes.
+router.use(authController.protect);
 
-router.patch('/updateMe', authController.protect, userController.updateMe);
-router.delete('/deleteMe', authController.protect, userController.deleteMe);
+router.patch('/updateMyPassword', authController.updatePassword);
+router.get('/me', userController.getMe, userController.getUser);
+router.patch('/updateMe', userController.updateMe);
+router.delete('/deleteMe', userController.deleteMe);
+
+router.use(authController.restrictTo('admin'));
 
 // routes in REST format
 router
