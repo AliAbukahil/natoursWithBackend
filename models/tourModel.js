@@ -117,6 +117,12 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
+// querying with index
+// price: 1 means sorting in ascending order
+// price: -1 means sorting in descending
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
+
 // Virtual Properties
 // why the reqular function here? because an arrow function does not get its own (this) keyword and in we need the (this) keyword
 tourSchema.virtual('durationWeeks').get(function () {
