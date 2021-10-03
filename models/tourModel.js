@@ -123,6 +123,7 @@ const tourSchema = new mongoose.Schema(
 // price: -1 means sorting in descending
 tourSchema.index({ price: 1, ratingsAverage: -1 });
 tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' });
 
 // Virtual Properties
 // why the reqular function here? because an arrow function does not get its own (this) keyword and in we need the (this) keyword
