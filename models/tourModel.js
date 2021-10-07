@@ -186,10 +186,10 @@ tourSchema.post(/^find/, function (docs, next) {
 });
 
 // AGGREGATION MIDDLEWARE
-tourSchema.pre('aggregate', function (next) {
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } }); // $ne => not equal
-  next();
-});
+// tourSchema.pre('aggregate', function (next) {
+//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } }); // $ne => not equal
+//   next();
+// });
 
 // creating a model out the Schema above
 const Tour = mongoose.model('Tour', tourSchema);
