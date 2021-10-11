@@ -1,3 +1,5 @@
+// requiring Path node core module
+const path = require('path');
 const express = require('express');
 // requiring morgan Middleware
 const morgan = require('morgan');
@@ -21,8 +23,15 @@ const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 
 const app = express();
+// setting up the pug engine
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
 
 // 1) GlOBAL MIDDLEWARES
+//  Serving static files like images and html pages
+// app.use(express.static(`${__dirname}/public`));
+app.use(express.static(path.join(__dirname, 'public')));
+
 // middleware is basically just a function that can modify the incoming request data
 // it is called middleware because it stands between, so in the middle of the request and the response
 
@@ -65,9 +74,6 @@ app.use(
   })
 );
 
-//  Serving static files like images and html pages
-app.use(express.static(`${__dirname}/public`));
-
 // Middleware Function next
 // Just use this Middleware here in order to demonstrate
 // the concept of Middleware
@@ -84,6 +90,10 @@ app.use((req, res, next) => {
 });
 
 // 3) Routes
+
+app.get('/', (req, res) => {
+  res.status(200).render('base');
+});
 
 // tours
 app.use('/api/v1/tours', tourRouter);
