@@ -1,4 +1,5 @@
 // Importing the Tour Module
+const { render } = require('pug');
 const Tour = require('../models/tourModel');
 // Importing the fabulous catchAsync Function
 const catchAsync = require('../utils/catchAsync');
@@ -30,4 +31,10 @@ exports.getTour = catchAsync(async (req, res, next) => {
       title: `${tour.title} Tour`,
       tour,
     });
+});
+
+exports.getLoginForm = catchAsync(async (req, res) => {
+  res.status(200).render('login', {
+    title: 'Log into your account',
+  });
 });
