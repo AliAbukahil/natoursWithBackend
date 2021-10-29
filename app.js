@@ -13,6 +13,8 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 // requiring the hpp HTTP Parameter pollution
 const hpp = require('hpp');
+// requiring Cookie parser
+const cookieParser = require('cookie-parser');
 // requiring AppError
 const AppError = require('./utils/appError');
 // requiring errorController from controllers folder
@@ -55,6 +57,7 @@ app.use('/api', limiter);
 
 // Body parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));
+app.use(cookieParser()); // this parses the data from cookies
 
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize()); // it removes the $ sign "email": {"$gt": ""}
@@ -87,7 +90,7 @@ app.use(
 // Test Middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString().slice(0, 16).replace('T', ' ');
-  // console.log(req.headers);
+  console.log(req.cookies);
   next();
 });
 
