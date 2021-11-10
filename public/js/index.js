@@ -6,6 +6,7 @@ import { login } from './login';
 // DOM ELEMENTS
 const mapBox = document.getElementById('map');
 const loginForm = document.getElementById('.form');
+const logOutBtn = document.querySelector('.nav__el--logout');
 
 // DELEGATION
 if (mapBox) {
