@@ -45,7 +45,6 @@ const sendErrorDev = (err, req, res) => {
     msg: err.message,
   });
 };
-
 // friendly error for the user
 const sendErrorProd = (err, req, res) => {
   // A) API
