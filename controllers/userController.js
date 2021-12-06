@@ -1,3 +1,5 @@
+// requiring Multer
+const multer = require('multer');
 // requiring the userModal from the modals folder
 //const { create } = require('./../models/userModel');
 const User = require('../models/userModel');
@@ -6,6 +8,31 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 // requiring the handler Factory delete function
 const factory = require('./handlerFactory');
+
+const multerStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/img/users');
+  },
+  filename: (req, file, cb) => {
+    const ext = file.mimetype.split('/')[1];
+    cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+  },
+});
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    cb(new AppError('Not an image! Please upload only images.', 400), false);
+  }
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+exports.uploadUserPhoto = upload.single('photo');
 
 const filterObj = (obj, ...allowedFields) => {
   // looping with Object, easy ways to loop in JavaScript, Object.keys(obj) => returns an Array containing all the key name
