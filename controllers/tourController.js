@@ -1,3 +1,6 @@
+const multer = require('multer');
+const sharp = require('sharp');
+
 // requiring the tourModal from the modals folder
 //const { create } = require('./../models/tourModel');
 const Tour = require('../models/tourModel');
@@ -10,11 +13,43 @@ const Tour = require('../models/tourModel');
 // requirung the catching errors catchAsync function from utilities folder
 const catchAsync = require('../utils/catchAsync');
 
-// requiring the AppError class from appError file in utils folder
-const AppError = require('./../utils/appError');
-
 // requiring the handler Factory delete function
 const factory = require('./handlerFactory');
+
+// requiring the AppError class from appError file in utils folder
+const AppError = require('../utils/appError');
+
+const multerStorage = multer.memoryStorage();
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    cb(new AppError('Not an image! Please upload only images.', 400), false);
+  }
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+// when there is mix of them the upload.fields()
+exports.uploadTourImages = upload.fields([
+  { name: 'imageCover', maxCount: 1 },
+  { name: 'images', maxCount: 3 },
+]);
+
+// when single image
+// upload.single('image') this will produce req.file
+// when multiple wuth same name
+// upload.array('images', 5) this will produce req.files
+
+// next middleware to process images
+exports.resizeTourImages = (req, res, next) => {
+  console.log(req.files);
+  next();
+};
 
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
