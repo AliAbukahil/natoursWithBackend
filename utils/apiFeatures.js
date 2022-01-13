@@ -1,22 +1,17 @@
 class APIFeatures {
-  // query = from mongoose query
-  // queryString = from express, basically, coming from the route
   constructor(query, queryString) {
     this.query = query;
     this.queryString = queryString;
   }
 
   filter() {
-    // Bulid Query
-    // 1A) Filtering
     const queryObj = { ...this.queryString };
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
-    excludedFields.forEach((el) => delete queryObj[el]);
+    excludedFields.forEach(el => delete queryObj[el]);
 
     // 1B) Advanced filtering
-    // converting the object to a string
     let queryStr = JSON.stringify(queryObj);
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
 
     this.query = this.query.find(JSON.parse(queryStr));
 
@@ -24,7 +19,6 @@ class APIFeatures {
   }
 
   sort() {
-    // 2) Sorting
     if (this.queryString.sort) {
       const sortBy = this.queryString.sort.split(',').join(' ');
       this.query = this.query.sort(sortBy);
@@ -36,7 +30,6 @@ class APIFeatures {
   }
 
   limitFields() {
-    // 3) Field Limiting
     if (this.queryString.fields) {
       const fields = this.queryString.fields.split(',').join(' ');
       this.query = this.query.select(fields);
@@ -48,7 +41,6 @@ class APIFeatures {
   }
 
   paginate() {
-    // 4) Pagination
     const page = this.queryString.page * 1 || 1;
     const limit = this.queryString.limit * 1 || 100;
     const skip = (page - 1) * limit;

@@ -12,13 +12,13 @@ module.exports = class Email {
 
   newTransport() {
     if (process.env.NODE_ENV === 'production') {
-      // sendgrid
+      // Sendgrid
       return nodemailer.createTransport({
         service: 'SendGrid',
         auth: {
           user: process.env.SENDGRID_USERNAME,
-          pass: process.env.SENDGRID_PASSWORD,
-        },
+          pass: process.env.SENDGRID_PASSWORD
+        }
       });
     }
 
@@ -27,17 +27,18 @@ module.exports = class Email {
       port: process.env.EMAIL_PORT,
       auth: {
         user: process.env.EMAIL_USERNAME,
-        pass: process.env.EMAIL_PASSWORD,
-      },
+        pass: process.env.EMAIL_PASSWORD
+      }
     });
   }
 
+  // Send the actual email
   async send(template, subject) {
     // 1) Render HTML based on a pug template
     const html = pug.renderFile(`${__dirname}/../views/email/${template}.pug`, {
       firstName: this.firstName,
       url: this.url,
-      subject,
+      subject
     });
 
     // 2) Define email options
@@ -46,11 +47,10 @@ module.exports = class Email {
       to: this.to,
       subject,
       html,
-      text: htmlToText.fromString(html),
+      text: htmlToText.fromString(html)
     };
 
-    // 3)Create a transport and send email
-
+    // 3) Create a transport and send email
     await this.newTransport().sendMail(mailOptions);
   }
 
@@ -60,8 +60,8 @@ module.exports = class Email {
 
   async sendPasswordReset() {
     await this.send(
-      `passwordReset`,
-      `Your password reset token only (vaild for only 10 minutes)`
+      'passwordReset',
+      'Your password reset token (valid for only 10 minutes)'
     );
   }
 };
