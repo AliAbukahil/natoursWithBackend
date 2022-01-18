@@ -47,12 +47,13 @@ exports.getAccount = (req, res) => {
   });
 };
 
-exports.getMyTours = catchAsync(async (req, res, next) => {
+exports.getMyTours = catchAsync(async (req, res) => {
   // 1) Find all bookings
   const bookings = await Booking.find({ user: req.user.id });
 
   // 2) Find tours with the returned IDs
   const tourIDs = bookings.map((el) => el.tour);
+  // $in: is going to do instead of selecting all the tours which have an ID which is in the tourIDs array
   const tours = await Tour.find({ _id: { $in: tourIDs } });
 
   res.status(200).render('overview', {
