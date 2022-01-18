@@ -16,6 +16,7 @@ const reviewRouter = require('./routes/reviewRoutes');
 const bookingRouter = require('./routes/bookingRoutes');
 const viewRouter = require('./routes/viewRoutes');
 
+// start express app
 const app = express();
 
 app.set('view engine', 'pug');
@@ -37,7 +38,7 @@ if (process.env.NODE_ENV === 'development') {
 const limiter = rateLimit({
   max: 100,
   windowMs: 60 * 60 * 1000,
-  message: 'Too many requests from this IP, please try again in an hour!'
+  message: 'Too many requests from this IP, please try again in an hour!',
 });
 app.use('/api', limiter);
 
@@ -61,8 +62,8 @@ app.use(
       'ratingsAverage',
       'maxGroupSize',
       'difficulty',
-      'price'
-    ]
+      'price',
+    ],
   })
 );
 
